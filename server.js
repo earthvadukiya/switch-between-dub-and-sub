@@ -11,33 +11,35 @@ app.get("/", (req, res) => {
   res.send("Backend running 🚀");
 });
 
-// 🔥 REDIRECT METHOD (supports sub/dub)
+// 🔥 REDIRECT METHOD (SAFE)
 app.get("/api/stream", (req, res) => {
-  const { id, lang = "sub" } = req.query;
+  const { id, lang } = req.query;
 
   if (!id) {
-    return res.status(400).json({ error: "Missing episode ID" });
+    return res.status(400).send("Missing episode ID");
   }
 
-  // sanitize lang
-  const type = lang === "dub" ? "dub" : "sub";
+  // ✅ FIX: sanitize lang
+  let type = "sub";
+  if (lang === "dub") type = "dub";
 
   const embedUrl = `https://megaplay.buzz/stream/s-2/${id}/${type}`;
 
   res.redirect(embedUrl);
 });
 
-// 🔥 PROXY PLAYER PAGE (NOW SUPPORTS SUB/DUB)
+// 🔥 PROXY PAGE (SAFE + SUB/DUB SUPPORT)
 app.get("/watch/:id", (req, res) => {
   const { id } = req.params;
-  const { lang = "sub" } = req.query;
+  const { lang } = req.query;
 
   if (!id) {
     return res.status(400).send("Missing episode ID");
   }
 
-  // sanitize lang
-  const type = lang === "dub" ? "dub" : "sub";
+  // ✅ FIX: sanitize lang
+  let type = "sub";
+  if (lang === "dub") type = "dub";
 
   const embedUrl = `https://megaplay.buzz/stream/s-2/${id}/${type}`;
 
