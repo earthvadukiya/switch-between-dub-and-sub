@@ -11,24 +11,26 @@ app.get("/", (req, res) => {
   res.send("Backend running 🚀");
 });
 
-// 🔥 REDIRECT METHOD (SAFE)
+// 🔥 REDIRECT API (sub/dub support)
 app.get("/api/stream", (req, res) => {
   const { id, lang } = req.query;
 
   if (!id) {
-    return res.status(400).send("Missing episode ID");
+    return res.status(400).json({ error: "Missing episode ID" });
   }
 
-  // ✅ FIX: sanitize lang
+  // ✅ sanitize
   let type = "sub";
   if (lang === "dub") type = "dub";
 
   const embedUrl = `https://megaplay.buzz/stream/s-2/${id}/${type}`;
 
+  console.log("Redirecting to:", embedUrl);
+
   res.redirect(embedUrl);
 });
 
-// 🔥 PROXY PAGE (SAFE + SUB/DUB SUPPORT)
+// 🔥 PROXY PLAYER (sub/dub support)
 app.get("/watch/:id", (req, res) => {
   const { id } = req.params;
   const { lang } = req.query;
@@ -37,11 +39,13 @@ app.get("/watch/:id", (req, res) => {
     return res.status(400).send("Missing episode ID");
   }
 
-  // ✅ FIX: sanitize lang
+  // ✅ sanitize
   let type = "sub";
   if (lang === "dub") type = "dub";
 
   const embedUrl = `https://megaplay.buzz/stream/s-2/${id}/${type}`;
+
+  console.log("Embedding:", embedUrl);
 
   res.send(`
     <!DOCTYPE html>
@@ -66,5 +70,5 @@ app.get("/watch/:id", (req, res) => {
 
 // 🚀 Start server
 app.listen(PORT, () => {
-  console.log(\`Server running on http://localhost:\${PORT}\`);
+  console.log("🔥 Server running at http://localhost:5000");
 });
